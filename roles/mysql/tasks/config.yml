@@ -1,0 +1,19 @@
+---
+# filename: roles/mysql/tasks/configure.yml
+ - name: create mysql config
+   template: 
+     src: "my.cnf.j2" 
+     dest: "{{ mysql_cnfpath }}" 
+     mode: 0644
+   notify:
+     - restart mysql service
+## create Db
+ - name: Create DB
+   mysql_db: name={{ wp_mysql_db }} state=present
+### create user
+ - name: Create User
+   mysql_user:
+     name: '{{ wp_mysql_user }}' 
+     password: '{{ wp_mysql_password }}' 
+     priv: '*.*:ALL'
+     state: present

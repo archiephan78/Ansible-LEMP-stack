@@ -1,0 +1,38 @@
+---
+### install nginx via apt
+  - name: install nginx Debian
+    sudo: yes
+    apt:
+      name: "{{ nginx_pkg }}"
+      update_cache: yes
+### install php
+  - name: install php
+    sudo: yes
+    apt:
+      name: "{{ php_pkg }}"
+### edit config php
+
+  - name: edit config php
+    sudo: yes
+    lineinfile:
+      dest: /etc/php/7.0/fpm/php.ini
+      regexp: '(.)+;cgi.fix_pathinfo=1'
+      line: 'cgi.fix_pathinfo=1'   
+
+## config nginx to use php
+  - name: config files
+    template:
+      src: "{{ item }}.j2"
+      dest: "{{ nginx_debianpath }}/{{ item }}"
+      owner: root
+      group: root
+      mode : 777
+    with_items:
+      - default
+#### create default site
+  - name: create default site html
+    copy:
+      src: index.html
+      dest: /var/www/html
+    notify:
+      restart nginx service

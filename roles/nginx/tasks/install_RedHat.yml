@@ -1,0 +1,35 @@
+---
+##install nginx via yum
+  - name: install nginx RedHat
+    sudo: yes
+    yum:
+      name: "{{ nginx_pkg }}"
+      update_cache: yes
+### install php
+  - name: install php
+    sudo: yes
+    yum:
+      name: " {{ php_pkg }}"
+### config php
+  - name: edit config file Php
+    sudo: yes
+    lineinfile:
+      path: /etc/php.ini
+      regexp: 'cgi.fix_pathinfo=0'
+      line: 'cgi.fix_pathinfo=1'
+### config nginx
+  - name: config file
+    template:
+      src: "{{ item }}".j2
+      dest: /etc/nginx/conf.d/ "{{ item }}"
+    with_item:
+      - default.conf
+
+### create delfault site
+  - name: create default site html
+    copy:
+      src: index.html
+      dest: /usr/share/nginx/html
+    notify:
+      restart nginx service
+
